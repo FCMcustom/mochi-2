@@ -1,0 +1,6 @@
+{
+  "name": "Smart ChemLab GDPT 2018",
+  "description": "Phòng thí nghiệm Hóa học ảo thích ứng (Adaptive Virtual Lab) hỗ trợ cá nhân hóa học tập cho học sinh THPT theo chương trình GDPT 2018 với Chemical Engine, mô phỏng vi mô - vĩ mô, Trợ lý AI Socratic và Thống kê nghiên cứu KHKT.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
