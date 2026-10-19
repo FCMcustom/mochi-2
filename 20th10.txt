@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chúc Mừng Ngày Phụ Nữ Việt Nam 20/10</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400;1,600&family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at center, #fff5f8 0%, #ffd6e7 100%);
+      transition: background 1.2s ease;
+      position: relative;
+    }
+
+    body.night-mode {
+      background: radial-gradient(circle at center, #2b0926 0%, #0f020e 100%);
+    }
+
+    /* Canvas hoa rơi & trái tim bay */
+    #falling-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* Khung quản lý các màn hình */
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      transform: scale(0.96);
+      z-index: 10;
+      padding: 20px;
+    }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    /* Nút bấm chung */
+    .btn-pink {
+      background: linear-gradient(135deg, #ff7eb3, #ff4286);
+      color: #fff;
+      border: 2px solid #fff;
+      padding: 12px 32px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 66, 134, 0.35);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+    }
+
+    .btn-pink:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 12px 25px rgba(255, 66, 134, 0.5);
+    }
+
+    .tap-hint {
+      position: absolute;
+      bottom: 35px;
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      color: #d65a8a;
+      text-transform: uppercase;
+      font-weight: 600;
+      animation: blink 1.8s infinite;
+      cursor: pointer;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 1; }
+    }
+
+    /* ================= MÀN HÌNH 1: MỞ ĐẦU ================= */
+    .badge-top {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid #ffb3d1;
+      padding: 6px 20px;
+      border-radius: 30px;
+      color: #c93b76;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
+    }
+
+    .big-date {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4.5rem, 12vw, 7rem);
+      font-weight: 700;
+      background: linear-gradient(180deg, #ff66a3 0%, #c91860 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 6px 12px rgba(201, 24, 96, 0.2));
+    }
+
+    .subtitle-italic {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      color: #7a3e58;
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 45px;
+    }
+
+    /* ================= MÀN HÌNH 2: LOADING ================= */
+    .loading-envelope {
+      width: 150px;
+      height: 105px;
+      background: #ffd1e3;
+      border: 3px solid #e6397a;
+      border-radius: 10px;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(230, 57, 122, 0.25);
+      margin-bottom: 25px;
+      animation: floatEnv 2s infinite ease-in-out;
+    }
+
+    .loading-envelope::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-left: 72px solid transparent;
+      border-right: 72px solid transparent;
+      border-top: 55px solid #ffb3d1;
+      filter: drop-shadow(0 3px 2px rgba(230, 57, 122, 0.4));
+    }
+
+    .seal-heart {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 34px;
+      height: 34px;
+      background: #e61960;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 0.55rem;
+      font-weight: bold;
+      box-shadow: 0 3px 8px rgba(230, 25, 96, 0.5);
+    }
+
+    @keyframes floatEnv {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .loading-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      color: #a64d73;
+      font-size: 1.25rem;
+      margin-bottom: 15px;
+    }
+
+    .progress-bar-wrap {
+      width: 260px;
+      height: 10px;
+      background: #ffe0ec;
+      border-radius: 10px;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff85b3, #b833ff);
+      border-radius: 10px;
+      position: relative;
+      transition: width 0.1s linear;
+    }
+
+    .progress-flower {
+      position: absolute;
+      right: -12px;
+      top: -9px;
+      font-size: 1.2rem;
+    }
+
+    /* ================= MÀN HÌNH 3: HOẠT CẢNH CHIBI ================= */
+    .scene-box {
+      width: 100%;
+      max-width: 520px;
+      height: 420px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .anim-part {
+      opacity: 0;
+      transform: translateY(20px) scale(0.85);
+      transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .anim-part.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .speech-bubble {
+      position: absolute;
+      top: 105px;
+      left: 52%;
+      transform: translateX(-50%) scale(0.8);
+      background: #fff;
+      border: 2px solid #ff85b3;
+      border-radius: 25px;
+      padding: 8px 20px;
+      color: #d62970;
+      font-weight: 700;
+      font-size: 1.05rem;
+      box-shadow: 0 6px 15px rgba(255, 105, 180, 0.2);
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
+
+    .speech-bubble.show {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 25px;
+      border-width: 10px 8px 0;
+      border-style: solid;
+      border-color: #ff85b3 transparent;
+    }
+
+    /* ================= MÀN HÌNH 4: TỜ LỊCH 20/10 ================= */
+    .calendar-card {
+      background: rgba(255, 252, 253, 0.92);
+      border-radius: 24px;
+      padding: 28px 32px;
+      width: 95%;
+      max-width: 520px;
+      box-shadow: 0 15px 35px rgba(214, 65, 122, 0.18);
+      border: 2px solid #ffe3ee;
+      text-align: center;
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .cal-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.5rem;
+      color: #d12e6d;
+      line-height: 1.1;
+    }
+
+    .cal-sub {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.6rem;
+      color: #e05388;
+      margin-bottom: 15px;
+    }
+
+    .cal-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .big-3d-heart {
+      flex: 1;
+      min-width: 140px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: heartBeat 1.4s infinite ease-in-out;
+    }
+
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .cal-grid-wrap {
+      flex: 1.3;
+      min-width: 210px;
+    }
+
+    .cal-month-label {
+      font-weight: 700;
+      color: #6e354d;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      font-size: 0.78rem;
+      color: #7d5264;
+    }
+
+    .cal-grid div {
+      padding: 5px 0;
+      border-radius: 50%;
+    }
+
+    .cal-grid .day-header {
+      font-weight: 700;
+      color: #b56584;
+    }
+
+    .cal-grid .highlight-20 {
+      background: #ff4785;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 0 10px rgba(255, 71, 133, 0.7);
+      animation: pulse20 1.2s infinite;
+    }
+
+    @keyframes pulse20 {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    /* ================= MÀN HÌNH 5: BỨC THƯ & PHONG BÌ ================= */
+    .letter-envelope-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .interactive-env {
+      width: 270px;
+      height: 180px;
+      background: #ff85b3;
+      border-radius: 12px;
+      position: relative;
+      box-shadow: 0 15px 35px rgba(214, 41, 112, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.5s ease;
+    }
+
+    .interactive-env:hover {
+      transform: translateY(-5px);
+    }
+
+    .env-card-preview {
+      width: 230px;
+      height: 140px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px dashed #ffb3d1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transform: translateY(-22px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .env-card-preview h4 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.5rem;
+      color: #d62970;
+      margin-top: 6px;
+    }
+
+    .letter-modal {
+      position: absolute;
+      width: 92vw;
+      max-width: 470px;
+      background: #fffdfd;
+      border-radius: 18px;
+      padding: 28px 26px;
+      box-shadow: 0 20px 50px rgba(168, 32, 88, 0.28);
+      border: 2px solid #ffd6e6;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(40px) scale(0.9);
+      transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      z-index: 30;
+    }
+
+    .letter-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .letter-content p {
+      font-size: 0.96rem;
+      line-height: 1.65;
+      color: #4a2c3a;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .letter-sign {
+      text-align: right;
+      font-style: italic;
+      color: #9c5a78;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    /* ================= MÀN HÌNH 6: VƯỜN HOA ĐÊM SAO ================= */
+    .garden-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .night-flower {
+      position: absolute;
+      bottom: 0;
+      transform-origin: bottom center;
+      animation: swayFlower 3.5s infinite ease-in-out alternate;
+    }
+
+    @keyframes swayFlower {
+      0% { transform: rotate(-4deg); }
+      100% { transform: rotate(4deg); }
+    }
+
+    .stem-grow {
+      stroke-dasharray: 400;
+      stroke-dashoffset: 400;
+      animation: growStem 2.2s forwards ease-out;
+    }
+
+    @keyframes growStem {
+      to { stroke-dashoffset: 0; }
+    }
+
+    .bloom-pop {
+      opacity: 0;
+      transform: scale(0);
+      transform-origin: center;
+      animation: popBloom 0.9s 1.8s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes popBloom {
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* ================= MÀN HÌNH 7: LỜI CẢM ƠN ================= */
+    .thank-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: clamp(2.8rem, 7vw, 4.3rem);
+      background: linear-gradient(90deg, #e62e73, #9b4dca);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .thank-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.3rem;
+      color: #6e354d;
+      text-align: center;
+      max-width: 460px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .hearts-row {
+      display: flex;
+      gap: 10px;
+      font-size: 1.3rem;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas Hiệu ứng Hoa Rơi & Tim Bay -->
+  <canvas id="falling-canvas"></canvas>
+
+  <!-- ==================== MÀN HÌNH 1: MỞ ĐẦU ==================== -->
+  <div class="screen active" id="screen-1">
+    <div class="badge-top">🎀 NGÀY PHỤ NỮ VIỆT NAM 🌸</div>
+    <div class="big-date">20 • 10</div>
+    <div class="subtitle-italic">
+      Gửi cô Khânh và các bạn nữ<br>
+      của lớp 11A4 một chút yêu thương
+    </div>
+    <button class="btn-pink" onclick="startExperience()">
+      <span>🌸</span> CHẠM ĐỂ BẮT ĐẦU <span>💐</span>
+    </button>
+  </div>
+
+  <!-- ==================== MÀN HÌNH 2: LOADING ==================== -->
+  <div class="screen" id="screen-2">
+    <div class="loading-envelope">
+      <div class="seal-heart">20/10</div>
+    </div>
+    <div class="loading-text">Đang chuẩn bị món quà nhỏ...</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-fill" id="progress-fill">
+        <span class="progress-flower">🌸</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MÀN HÌNH 3: HOẠT CẢNH CHIBI ==================== -->
+  <div class="screen" id="screen-3" onclick="goToScreen(4)">
+    <div class="scene-box">
+      <div class="speech-bubble" id="chibi-speech">20/10 vui vẻ! 💐🌷</div>
+
+      <svg viewBox="0 0 500 400" width="100%" height="100%">
+        <!-- Mặt đất & Đám mây & Mặt trời (Bước 1) -->
+        <g class="anim-part" id="part-1">
+          <path d="M 10 340 Q 150 325 300 340 T 490 330" fill="none" stroke="#c589e8" stroke-width="3"/>
+          <!-- Mặt trời -->
+          <circle cx="450" cy="80" r="35" fill="#ffd954" stroke="#f5b700" stroke-width="2"/>
+          <circle cx="440" cy="75" r="3" fill="#444"/>
+          <circle cx="460" cy="75" r="3" fill="#444"/>
+          <path d="M 442 86 Q 450 94 458 86" fill="none" stroke="#444" stroke-width="2" stroke-linecap="round"/>
+          <!-- Đám mây -->
+          <path d="M 40 120 Q 55 100 75 110 Q 95 95 115 115 Q 130 120 120 135 L 40 135 Z" fill="#fff" stroke="#f2bcd6" stroke-width="2"/>
+        </g>
+
+        <!-- Thân và tóc cô gái (Bước 2) -->
+        <g class="anim-part" id="part-2">
+          <path d="M 65 200 C 60 120 160 120 155 200 C 165 250 150 265 140 260 L 80 260 C 70 265 55 250 65 200 Z" fill="#e63982" stroke="#801a45" stroke-width="2"/>
+          <path d="M 85 245 L 135 245 L 155 335 L 65 335 Z" fill="#a970ff" stroke="#5e2ea6" stroke-width="2"/>
+          <path d="M 80 245 Q 110 265 140 245 L 148 280 L 72 280 Z" fill="#fff" stroke="#ccc" stroke-width="1.5"/>
+          <circle cx="110" cy="195" r="34" fill="#ffe6d5" stroke="#bfa08e" stroke-width="2"/>
+          <path d="M 76 190 Q 95 155 112 180 Q 130 160 144 190 Q 135 150 110 155 Q 85 150 76 190 Z" fill="#ff5c9e"/>
+        </g>
+
+        <!-- Đôi mắt long lanh & Tay chân (Bước 3) -->
+        <g class="anim-part" id="part-3">
+          <ellipse cx="97" cy="195" rx="9" ry="11" fill="#1b6ca8"/>
+          <circle cx="94" cy="191" r="3.5" fill="#fff"/>
+          <ellipse cx="123" cy="195" rx="9" ry="11" fill="#1b6ca8"/>
+          <circle cx="120" cy="191" r="3.5" fill="#fff"/>
+          <path d="M 105 212 Q 110 218 115 212" fill="none" stroke="#d63864" stroke-width="2" stroke-linecap="round"/>
+          <path d="M 76 255 Q 50 275 55 290" fill="none" stroke="#ffe6d5" stroke-width="6" stroke-linecap="round"/>
+          <path d="M 144 255 Q 170 275 165 290" fill="none" stroke="#ffe6d5" stroke-width="6" stroke-linecap="round"/>
+          <line x1="98" y1="335" x2="98" y2="352" stroke="#d49b7e" stroke-width="4"/>
+          <line x1="122" y1="335" x2="122" y2="352" stroke="#d49b7e" stroke-width="4"/>
+        </g>
+
+        <!-- Mèo hồng & Chậu hoa (Bước 4) -->
+        <g class="anim-part" id="part-4">
+          <polygon points="195,305 202,280 218,295" fill="#ffb8d9" stroke="#5c2640" stroke-width="2"/>
+          <polygon points="255,305 248,280 232,295" fill="#ffb8d9" stroke="#5c2640" stroke-width="2"/>
+          <ellipse cx="225" cy="318" rx="30" ry="24" fill="#ffcce5" stroke="#5c2640" stroke-width="2"/>
+          <circle cx="214" cy="315" r="3.5" fill="#222"/>
+          <circle cx="236" cy="315" r="3.5" fill="#222"/>
+          <path d="M 221 323 Q 225 327 229 323" fill="none" stroke="#222" stroke-width="2"/>
+
+          <polygon points="335,310 385,310 375,348 345,348" fill="#ff66a3" stroke="#73193d" stroke-width="2"/>
+          <path d="M 360 310 L 360 235 M 360 310 L 335 255 M 360 310 L 385 250" stroke="#2e9c58" stroke-width="3.5"/>
+          <circle cx="335" cy="250" r="14" fill="#ff73b9" stroke="#73193d" stroke-width="1.5"/>
+          <circle cx="335" cy="250" r="5" fill="#ffd954"/>
+          <circle cx="360" cy="228" r="16" fill="#b57cff" stroke="#471973" stroke-width="1.5"/>
+          <circle cx="360" cy="228" r="6" fill="#ffd954"/>
+          <circle cx="388" cy="248" r="14" fill="#ff94b8" stroke="#73193d" stroke-width="1.5"/>
+          <circle cx="388" cy="248" r="5" fill="#ffd954"/>
+        </g>
+
+        <!-- Chữ 20.10 & Trái tim bay (Bước 5) -->
+        <g class="anim-part" id="part-5">
+          <text x="250" y="95" text-anchor="middle" font-family="Cormorant Garamond" font-size="38" font-weight="bold" fill="#e03e7d">• 20 • 10 •</text>
+          <path d="M 195 190 C 190 180 175 185 185 200 L 195 210 L 205 200 C 215 185 200 180 195 190 Z" fill="#ff4d8d"/>
+          <path d="M 220 165 C 216 158 205 162 212 172 L 220 180 L 228 172 C 235 162 224 158 220 165 Z" fill="#ff80b3"/>
+        </g>
+      </svg>
+    </div>
+    <div class="tap-hint">CHẠM ĐỂ TIẾP TỤC</div>
+  </div>
+
+  <!-- ==================== MÀN HÌNH 4: TỜ LỊCH 20/10 ==================== -->
+  <div class="screen" id="screen-4">
+    <div class="calendar-card">
+      <div class="cal-title">Ngày 20/10</div>
+      <div class="cal-sub">Happy Women's Day</div>
+
+      <div class="cal-body">
+        <div class="big-3d-heart">
+          <svg width="135" height="125" viewBox="0 0 100 90">
+            <defs>
+              <radialGradient id="heartGrad" cx="35%" cy="30%" r="65%">
+                <stop offset="0%" stop-color="#ffd1e6"/>
+                <stop offset="45%" stop-color="#ff5c9e"/>
+                <stop offset="100%" stop-color="#c91860"/>
+              </radialGradient>
+            </defs>
+            <path d="M50 82 C50 82 10 56 10 30 C10 14 24 5 38 12 C45 15 50 23 50 23 C50 23 55 15 62 12 C76 5 90 14 90 30 C90 56 50 82 50 82 Z" fill="url(#heartGrad)"/>
+          </svg>
+        </div>
+
+        <div class="cal-grid-wrap">
+          <div class="cal-month-label">October 2026</div>
+          <div class="cal-grid">
+            <div class="day-header">CN</div><div class="day-header">T2</div><div class="day-header">T3</div><div class="day-header">T4</div><div class="day-header">T5</div><div class="day-header">T6</div><div class="day-header">T7</div>
+            <div></div><div></div><div></div><div></div><div>1</div><div>2</div><div>3</div>
+            <div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div>
+            <div>18</div><div>19</div><div class="highlight-20">20</div><div>21</div><div>22</div><div>23</div><div>24</div>
+            <div>25</div><div>26</div><div>27</div><div>28</div><div>29</div><div>30</div><div>31</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-pink" onclick="goToScreen(5)">
+      TIẾP TỤC ➔
+    </button>
+  </div>
+
+  <!-- ==================== MÀN HÌNH 5: BỨC THƯ CHÚC MỪNG ==================== -->
+  <div class="screen" id="screen-5">
+    <div class="letter-envelope-wrapper" id="envelope-box" onclick="toggleLetter()">
+      <div class="interactive-env">
+        <div class="env-card-preview">
+          <span style="font-size: 1.5rem;">❤️</span>
+          <h4>Cô và 11A4</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="letter-modal" id="letter-modal" onclick="toggleLetter()">
+      <div class="letter-content">
+        <p>Chúc cô Khânh luôn mạnh khỏe, xinh đẹp, hạnh phúc, tràn đầy nhiệt huyết với sự nghiệp trồng người và mãi là người lái đò tận tâm, dìu dắt tập thể 11A4 ngày càng trưởng thành.</p>
+        <p>Chúc các bạn nữ lớp 11A4 luôn rạng rỡ, tự tin, học giỏi, gặp nhiều may mắn, luôn được yêu thương và theo đuổi thành công những ước mơ của mình.</p>
+        <p>Mong rằng mỗi ngày trôi qua đều là một ngày vui, mỗi nụ cười đều mang theo hạnh phúc và mỗi chúng ta đều sẽ trở thành những bông hoa xinh đẹp theo cách riêng của mình.</p>
+        <p>Chúc cô và tất cả các bạn nữ có một ngày 20/10 thật ý nghĩa, ngập tràn niềm vui, tiếng cười và những điều ngọt ngào nhất! 🌷💖</p>
+        <div class="letter-sign">— Tập thể lớp 11A4</div>
+      </div>
+    </div>
+
+    <div class="tap-hint" id="letter-hint" onclick="handleLetterHintClick()">CHẠM VÀO LÁ THƯ ĐỂ ĐỌC</div>
+  </div>
+
+  <!-- ==================== MÀN HÌNH 6: VƯỜN HOA ĐÊM SAO ==================== -->
+  <div class="screen" id="screen-6" onclick="goToScreen(7)">
+    <div class="garden-container" id="garden-container"></div>
+    <div class="tap-hint" style="color: #ff99c8;">CHẠM ĐỂ TIẾP TỤC</div>
+  </div>
+
+  <!-- ==================== MÀN HÌNH 7: LỜI CẢM ƠN ==================== -->
+  <div class="screen" id="screen-7">
+    <div class="badge-top">❤️ 20 • 10 • 2026 ❤️</div>
+    <div class="thank-title">
+      Cảm ơn<br>cô và các bạn
+    </div>
+    <div class="thank-desc">
+      Đã luôn ở đây, mang đến tiếng cười và sự dịu dàng<br>
+      cho tập thể 11A4 của chúng mình.
+    </div>
+    <div class="hearts-row">
+      <span>💗</span><span>💜</span><span>💖</span><span>💛</span><span>💓</span>
+    </div>
+    <button class="btn-pink" onclick="restartExperience()">
+       ❤️Mãi Yêu 11A4
+    </button>
+  </div>
+
+  <script>
+    /* ================= 1. QUẢN LÝ CHUYỂN MÀN HÌNH ================= */
+    let currentScreen = 1;
+    let letterState = 0;
+
+    function goToScreen(num) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(`screen-${num}`);
+      if (target) target.classList.add('active');
+      currentScreen = num;
+
+      if (num === 6) {
+        document.body.classList.add('night-mode');
+        renderNightGarden();
+      } else {
+        document.body.classList.remove('night-mode');
+      }
+
+      if (num === 2) runLoadingScreen();
+      if (num === 3) runChibiAnimation();
+      if (num === 5) {
+        letterState = 0;
+        document.getElementById('letter-modal').classList.remove('open');
+        document.getElementById('letter-hint').innerText = 'CHẠM VÀO LÁ THƯ ĐỂ ĐỌC';
+      }
+    }
+
+    function startExperience() {
+      goToScreen(2);
+    }
+
+    function restartExperience() {
+      goToScreen(1);
+    }
+
+    /* ================= 2. MÀN HÌNH 2: THANH LOADING ================= */
+    function runLoadingScreen() {
+      const fill = document.getElementById('progress-fill');
+      let progress = 0;
+      fill.style.width = '0%';
+      const interval = setInterval(() => {
+        progress += 2;
+        fill.style.width = `${progress}%`;
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => goToScreen(3), 400);
+        }
+      }, 55);
+    }
+
+    /* ================= 3. MÀN HÌNH 3: HOẠT CẢNH VẼ CHIBI ================= */
+    function runChibiAnimation() {
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById(`part-${i}`).classList.remove('show');
+      }
+      document.getElementById('chibi-speech').classList.remove('show');
+
+      const delays = [200, 1400, 2600, 3800, 5000];
+      delays.forEach((delay, idx) => {
+        setTimeout(() => {
+          if (currentScreen === 3) {
+            document.getElementById(`part-${idx + 1}`).classList.add('show');
+          }
+        }, delay);
+      });
+
+      setTimeout(() => {
+        if (currentScreen === 3) {
+          document.getElementById('chibi-speech').classList.add('show');
+        }
+      }, 5600);
+    }
+
+    /* ================= 4. MÀN HÌNH 5: ĐÓNG / MỞ THƯ ================= */
+    function toggleLetter() {
+      const modal = document.getElementById('letter-modal');
+      const hint = document.getElementById('letter-hint');
+
+      if (letterState === 0) {
+        modal.classList.add('open');
+        hint.innerText = 'CHẠM ĐỂ ĐÓNG THƯ';
+        letterState = 1;
+      } else if (letterState === 1) {
+        modal.classList.remove('open');
+        hint.innerText = 'CHẠM ĐỂ TIẾP TỤC ➔';
+        letterState = 2;
+      } else {
+        goToScreen(6);
+      }
+    }
+
+    function handleLetterHintClick() {
+      toggleLetter();
+    }
+
+    /* ================= 5. MÀN HÌNH 6: VƯỜN HOA ĐÊM SAO ================= */
+    function renderNightGarden() {
+      const container = document.getElementById('garden-container');
+      container.innerHTML = '';
+
+      const flowersData = [
+        { left: '22%', height: 280, scale: 0.85, delay: '0s' },
+        { left: '38%', height: 390, scale: 1.05, delay: '0.3s' },
+        { left: '53%', height: 430, scale: 1.15, delay: '0.6s' },
+        { left: '72%', height: 330, scale: 0.95, delay: '0.2s' }
+      ];
+
+      flowersData.forEach(f => {
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("class", "night-flower");
+        svg.style.left = f.left;
+        svg.style.width = "140px";
+        svg.style.height = `${f.height}px`;
+        svg.style.animationDelay = f.delay;
+        svg.setAttribute("viewBox", "0 0 140 400");
+
+        svg.innerHTML = `
+          <path class="stem-grow" d="M 70 400 Q 55 250 70 80" fill="none" stroke="#3ca64b" stroke-width="5" stroke-linecap="round"/>
+          <path class="bloom-pop" d="M 65 260 Q 25 240 35 280 Q 50 290 65 260 Z" fill="#4ec95e"/>
+          <path class="bloom-pop" d="M 68 190 Q 110 170 100 210 Q 85 220 68 190 Z" fill="#4ec95e"/>
+          <g class="bloom-pop" style="transform-origin: 70px 80px;">
+            <circle cx="70" cy="48" r="22" fill="#ff9ec6" opacity="0.95"/>
+            <circle cx="100" cy="68" r="22" fill="#ffb3d1" opacity="0.95"/>
+            <circle cx="88" cy="102" r="22" fill="#ff85b3" opacity="0.95"/>
+            <circle cx="52" cy="102" r="22" fill="#ff9ec6" opacity="0.95"/>
+            <circle cx="40" cy="68" r="22" fill="#ffb3d1" opacity="0.95"/>
+            <circle cx="70" cy="78" r="16" fill="#ffe066"/>
+          </g>
+        `;
+        container.appendChild(svg);
+      });
+
+      setTimeout(() => {
+        if (currentScreen === 6) goToScreen(7);
+      }, 9500);
+    }
+
+    /* ================= 6. CANVAS HOA RƠI & TRÁI TIM BAY ================= */
+    const canvas = document.getElementById('falling-canvas');
+    const ctx = canvas.getContext('2d');
+    let cw = canvas.width = window.innerWidth;
+    let ch = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      cw = canvas.width = window.innerWidth;
+      ch = canvas.height = window.innerHeight;
+    });
+
+    const icons = ['🌸', '🌺', '🌷', '💖', '✨'];
+    const particles = Array.from({ length: 28 }, () => ({
+      x: Math.random() * cw,
+      y: Math.random() * ch,
+      size: 14 + Math.random() * 12,
+      speedY: 0.8 + Math.random() * 1.4,
+      speedX: (Math.random() - 0.5) * 1.2,
+      angle: Math.random() * 360,
+      spin: (Math.random() - 0.5) * 2,
+      icon: icons[Math.floor(Math.random() * icons.length)]
+    }));
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, cw, ch);
+
+      particles.forEach(p => {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.angle * Math.PI) / 180);
+        ctx.font = `${p.size}px serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(p.icon, 0, 0);
+        ctx.restore();
+
+        if (currentScreen === 6) {
+          p.y -= p.speedY * 0.7;
+          if (p.y < -30) p.y = ch + 30;
+        } else {
+          p.y += p.speedY;
+          if (p.y > ch + 30) p.y = -30;
+        }
+
+        p.x += p.speedX;
+        p.angle += p.spin;
+      });
+
+      requestAnimationFrame(drawParticles);
+    }
+
+    drawParticles();
+  </script>
+</body>
+</html>
